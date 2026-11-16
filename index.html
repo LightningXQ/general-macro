@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Re:Click UI</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            user-select: none;
+        }
+        
+        body {
+            background-color: #f0f3f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        /* 커스텀 타이틀바 */
+        .titlebar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 32px;
+            -webkit-app-region: drag;
+            user-select: none;
+        }
+        
+        .title-text {
+            font-size: 12px;
+            padding-left: 12px;
+            color: #1d1d1f;
+        }
+        
+        /* 우측 상단 시스템 컨트롤 버튼 */
+        .window-controls {
+            display: flex;
+            -webkit-app-region: no-drag;
+        }
+        
+        .control-btn {
+            width: 46px;
+            height: 32px;
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            color: #1d1d1f;
+            cursor: pointer;
+        }
+        
+        .control-btn:hover {
+            background-color: #e5e5e5;
+        }
+        
+        .control-btn.close:hover {
+            background-color: #e81123;
+            color: white;
+        }
+        
+        .app-container {
+            width: 100%;
+            max-width: 620px;
+            height: 100%;
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            position: relative;
+        }
+        
+        /* 상단 탭 및 컨트롤바 */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #eaeff6;
+            padding: 3px;
+            border-radius: 8px;
+        }
+        
+        .tab {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #555;
+        }
+        
+        .tab.active {
+            background: #0066cc;
+            color: white;
+        }
+        
+        /* 중앙 설정 옵션 줄 */
+        .config-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            font-size: 15px;
+            color: #444;
+        }
+        
+        select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccd4e0;
+            background: #fff;
+            font-size: 15px;
+            outline: none;
+            cursor: pointer;
+            color: #111;
+            font-weight: 500;
+        }
+        
+        select:hover {
+            border-color: #a0aec0;
+        }
+        
+        /* 하단 대형 버튼 */
+        .action-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .btn-start {
+            background-color: #6daade;
+            color: white;
+        }
+        
+        .btn-start:hover {
+            background-color: #5b99cc;
+        }
+        
+        .btn-stop {
+            background-color: #ff5252;
+            color: white;
+        }
+        
+        .btn-stop:hover {
+            background-color: #e04040;
+        }
+    </style>
+</head>
+<body>
+
+<div class="titlebar">
+    <div class="title-text">Re:Click UI</div>
+    <div class="window-controls">
+        <button class="control-btn" onclick="minimizeWindow()">─</button>
+        <button class="control-btn close" onclick="closeWindow()">✕</button>
+    </div>
+</div>
+
+<div class="app-container">
+    <!-- 상단 바 -->
+    <div class="header-bar">
+        <div class="tabs">
+            <button class="tab active">⏱ Timer</button>
+            <button class="tab">📹 Macro</button>
+        </div>
+        <div>
+            <select id="profile">
+                <option>Untitled •</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- 설정 레이아웃 -->
+    <div class="config-row">
+        <span>Click</span>
+        <select id="clickTarget" onchange="syncSettings()">
+            <option value="left">left button</option>
+            <option value="right">right button</option>
+            <option value="keyboard_a">keyboard 'a'</option>
+            <option value="nothing">nothing</option>
+        </select>
+        
+        <select id="clickType" onchange="syncSettings()">
+            <option value="single">Single</option>
+            <option value="double">Double</option>
+        </select>
+        
+        <span>at</span>
+        <select id="cpsSpeed" onchange="syncSettings()">
+            <option value="1">1 cps</option>
+            <option value="5">5 cps</option>
+            <option value="10" selected>10 cps</option>
+            <option value="20">20 cps</option>
+            <option value="50">50 cps</option>
+        </select>
+        
+        <span>at</span>
+        <select id="locationType" onchange="syncSettings()">
+            <option value="the cursor">the cursor</option>
+        </select>
+    </div>
+    
+    <div class="config-row">
+        <span>Stop</span>
+        <select id="stopCondition">
+            <option>never</option>
+        </select>
+    </div>
+    
+    <!-- 대형 실행 버튼 -->
+    <button id="mainBtn" class="action-btn btn-start" onclick="toggleMacro()">
+        <span id="btnIcon">▷</span> <span id="btnText">START</span> <span
+        style="font-size: 12px; opacity: 0.8; font-weight: normal; margin-left: 5px;">F8</span>
+    </button>
+</div>
+
+<script>
+    let isRunning = false;
+
+    function minimizeWindow() {
+        window.electronAPI.minimizeApp();
+    }
+
+    function closeWindow() {
+        window.electronAPI.closeApp();
+    }
+
+    // 드롭다운 변경 시 메인 프로세스로 설정 즉시 전송
+    function syncSettings() {
+        const target = document.getElementById('clickTarget').value;
+        const type = document.getElementById('clickType').value;
+        const cps = document.getElementById('cpsSpeed').value;
+
+        window.electronAPI.updateSettings(target, type, cps);
+    }
+
+    // START / STOP 버튼 클릭 제어 토글
+    function toggleMacro() {
+        const btn = document.getElementById('mainBtn');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
+
+        if (!isRunning) {
+            syncSettings(); // 시작 전 세팅 최종 동기화
+            window.electronAPI.controlMacro("start").then(response => {
+                if (response === "STARTED") {
+                    isRunning = true;
+                    btn.className = "action-btn btn-stop";
+                    btnText.innerText = "STOP";
+                    btnIcon.innerText = "■";
+                }
+            });
+        } else {
+            window.electronAPI.controlMacro("stop").then(response => {
+                if (response === "STOPPED") {
+                    isRunning = false;
+                    btn.className = "action-btn btn-start";
+                    btnText.innerText = "START";
+                    btnIcon.innerText = "▷";
+                }
+            });
+        }
+    }
+
+    // 전역 F8 단축키 이벤트 수신 (메인 프로세스 → 렌더러)
+    window.electronAPI.onF8Pressed(() => {
+        toggleMacro();
+    });
+
+    // 초기 로드 시 1회 설정 동기화
+    window.addEventListener('DOMContentLoaded', () => {
+        syncSettings();
+    });
+</script>
+</body>
+</html>
